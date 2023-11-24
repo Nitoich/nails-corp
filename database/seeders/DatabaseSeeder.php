@@ -28,11 +28,23 @@ class DatabaseSeeder extends Seeder
             'code' => 'admin',
         ]);
 
+        $user_role = Role::query()->create([
+            'name' => 'User',
+            'code' => 'user'
+        ]);
+
         $admin_user = User::query()->create([
             'name' => 'admin',
             'phone' => '79011132487',
             'role_id' => $admin_role->id,
             'password' => 'admin'
+        ]);
+
+        $default_user = User::query()->create([
+            'name' => 'Iam default user',
+            'phone' => '79999999999',
+            'role_id' => $user_role->id,
+            'password' => 'user'
         ]);
     }
 }

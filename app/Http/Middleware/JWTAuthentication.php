@@ -18,7 +18,7 @@ class JWTAuthentication
      * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
      * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
      */
-    public function handle(Request $request, Closure $next)
+    public function handle(Request $request, Closure $next, ?string $role = null)
     {
         $token = $request->bearerToken();
         if(!$token) {
@@ -33,6 +33,11 @@ class JWTAuthentication
         if(!$user) {
             $this->throwUnauthorized();
         }
+
+        if($role && $user->role->code !== $role) {
+            $this->throwForbidden();
+        }
+
         Auth::login($user);
         return $next($request);
     }
@@ -45,5 +50,15 @@ class JWTAuthentication
                 'message' => 'Unauthorized'
             ]
         ])->setStatusCode(401));
+    }
+
+    public function throwForbidden(): void
+    {
+        throw new HttpResponseException(response()->json([
+            'error' => [
+                'code' => 403,
+                'message' => 'Forbidden'
+            ]
+        ])->setStatusCode(403));
     }
 }
