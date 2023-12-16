@@ -16,13 +16,6 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
-
         $admin_role = Role::query()->create([
             'name' => 'Admin',
             'code' => 'admin',
@@ -37,7 +30,8 @@ class DatabaseSeeder extends Seeder
             'name' => 'admin',
             'phone' => '79011132487',
             'role_id' => $admin_role->id,
-            'password' => 'admin'
+            'password' => 'admin',
+            'birthday' => new \DateTime("now -18years")
         ]);
 
         $default_user = User::query()->create([

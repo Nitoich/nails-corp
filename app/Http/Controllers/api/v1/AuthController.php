@@ -8,6 +8,7 @@ use App\Models\Session;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -44,12 +45,18 @@ class AuthController extends Controller
             ])->setStatusCode(500);
         }
 
-        return response()->json([
-            'data' => [
-                'access_token' => $session->access_token(),
-                'refresh_token' => $session->token
-            ]
-        ])->setStatusCode(201);
+        return response()
+            ->json([
+                'data' => [
+                    'access_token' => $session->access_token(),
+                    'refresh_token' => $session->token
+                ]
+            ])
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Credentials', 'true')
+            ->header('Access-Control-Expose-Headers', 'Set-Cookie')
+            ->withCookie(cookie('refresh_token', $session->token, 60*24*30))
+            ->setStatusCode(201);
     }
 
     public function refresh_token(Request $request): JsonResponse
@@ -79,11 +86,21 @@ class AuthController extends Controller
             'expire_date' => new \DateTime("now +1month")
         ]);
 
+        return response()
+            ->json([
+                'data' => [
+                    'access_token' => $session->access_token(),
+                    'refresh_token' => $session->token
+                ]
+            ])
+            ->cookie(\cookie('refresh_token', $session->token, 60*24*30))
+            ->setStatusCode(200);
+    }
+
+    public function me(): JsonResponse
+    {
         return response()->json([
-            'data' => [
-                'access_token' => $session->access_token(),
-                'refresh_token' => $session->token
-            ]
+            'data' => Auth::user()
         ])->setStatusCode(200);
     }
 }

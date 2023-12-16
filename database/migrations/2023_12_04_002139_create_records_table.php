@@ -13,13 +13,13 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('records', function (Blueprint $table) {
             $table->id();
-            $table->string("name");
-            $table->string("phone");
-            $table->string("password")->nullable();
-            $table->foreignId('role_id')->constrained();
-            $table->date('birthday')->nullable();
+            $table->foreignId('user_id')->constrained();
+            $table->foreignId('product_id')->constrained();
+            $table->date('date');
+            $table->time('time');
+            $table->enum('status', ['wait', 'current', 'closed', 'skip'])->default('wait');
             $table->timestamps();
         });
     }
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('records');
     }
 };

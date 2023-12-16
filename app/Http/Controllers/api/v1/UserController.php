@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\api\v1\User\CreateUserRequest;
 use App\Http\Requests\api\v1\User\UpdateUserRequest;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -13,19 +14,7 @@ class UserController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
-        $page = $request->page ?? 1;
-        $page_size = $request->page_size ?? 10;
-
-        $builder = User::query();
-
-        $total_users = $builder->count();
-        return response()->json([
-            'page' => $page,
-            'page_size' => $page_size,
-            'total_pages' => ceil($total_users / $page_size),
-            'total_items' => $total_users,
-            'data' => $builder->get()
-        ])->setStatusCode(200);
+        return User::pagResponse(UserResource::class);
     }
 
     public function show(User $user): JsonResponse
